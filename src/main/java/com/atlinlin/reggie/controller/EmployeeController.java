@@ -74,7 +74,11 @@ public class EmployeeController {
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request) {
         //清理session保存当前登录员工的id
-        request.getSession().removeAttribute("employee");
+        try {
+            request.getSession().removeAttribute("employee");
+        } catch (Exception e) {
+            return R.error("登出失败"+e);
+        }
         return R.success("退出成功");
     }
 
@@ -128,7 +132,7 @@ public class EmployeeController {
         queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
 
         //添加排序条件
-       // queryWrapper.orderByDesc(Employee::getUpdateTime);
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
         //执行查询
         employeeService.page(pageInfo, queryWrapper);
         return R.success(pageInfo);
